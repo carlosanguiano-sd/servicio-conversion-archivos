@@ -11,5 +11,5 @@
 module.exports.routes = {
 
     // Convert
-    'get /ConvertFile': 'ConvertController.ConvertFile',
+    'post /ConvertFile': 'ConvertController.ConvertFile',
 };

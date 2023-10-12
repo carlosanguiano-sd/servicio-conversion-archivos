@@ -7,6 +7,7 @@
   "dependencies": {
     "@sailshq/lodash": "^3.10.3",
     "libreoffice-convert": "^1.4.1",
+    "mime": "^3.0.0",
     "sails": "^1.5.8",
     "sails-hook-orm": "^4.0.0",
     "sails-hook-sockets": "^2.0.0"

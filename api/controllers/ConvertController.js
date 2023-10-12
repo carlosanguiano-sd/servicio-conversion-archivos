@@ -9,6 +9,7 @@
 
 const path = require('path');
 const fs = require('fs').promises;
+const mime = require('mime');
 
 const libre = require('libreoffice-convert');
 libre.convertAsync = require('util').promisify(libre.convert);
@@ -20,20 +21,25 @@ module.exports = {
 	 */
 	ConvertFile: async function(req, res)
 	{
-        const ext = '.pdf'
-        const inputPath = 'resume.docx';
-        const outputPath = `example${ext}`;
-    
-        // Read file
-        const docxBuf = await fs.readFile(inputPath);
-    
-        // Convert it to pdf format with undefined filter (see Libreoffice docs about filter)
-        let pdfBuf = await libre.convertAsync(docxBuf, ext, undefined);
-        
-        // Here in done you have pdf file which you can save or transfer in another stream
-        await fs.writeFile(outputPath, pdfBuf);
+        await req.file('documento').upload(async function (err, uploadedFiles)
+        {
+            try
+            {
+                const inputFileBuffer = await fs.readFile(uploadedFiles[0].fd);
+                
+                const outputFileBuffer = await libre.convertAsync(inputFileBuffer, ".pdf", undefined);
 
-        return res.ok();
+                const outputFileBase64 = Buffer.from(outputFileBuffer).toString('base64');
+
+                return res.ok({file: `data:application/pdf;base64,${outputFileBase64}`});
+            }
+            catch(err)
+            {
+                var er = JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+                                
+                return res.serverError(er);
+            }
+        });
     }
 };
 
